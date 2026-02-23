@@ -426,15 +426,17 @@ def main():
     usart_config = config_dir / "sl_iostream_usart_vcom_config.h"
 
     if eusart_config.is_file() and not usart_config.is_file():
-        LOGGER.info("Creating USART→EUSART shim header for legacy_ncp_ash compatibility")
+        LOGGER.info(
+            "Creating USART→EUSART shim header for legacy_ncp_ash compatibility"
+        )
         usart_config.write_text(
-            '#ifndef SL_IOSTREAM_USART_VCOM_CONFIG_H\n'
-            '#define SL_IOSTREAM_USART_VCOM_CONFIG_H\n'
+            "#ifndef SL_IOSTREAM_USART_VCOM_CONFIG_H\n"
+            "#define SL_IOSTREAM_USART_VCOM_CONFIG_H\n"
             '#include "sl_iostream_eusart_vcom_config.h"\n'
-            '#ifndef SL_IOSTREAM_USART_VCOM_PERIPHERAL_NO\n'
-            '#define SL_IOSTREAM_USART_VCOM_PERIPHERAL_NO SL_IOSTREAM_EUSART_VCOM_PERIPHERAL_NO\n'
-            '#endif\n'
-            '#endif\n'
+            "#ifndef SL_IOSTREAM_USART_VCOM_PERIPHERAL_NO\n"
+            "#define SL_IOSTREAM_USART_VCOM_PERIPHERAL_NO SL_IOSTREAM_EUSART_VCOM_PERIPHERAL_NO\n"
+            "#endif\n"
+            "#endif\n"
         )
 
     # Make sure all extensions are valid
