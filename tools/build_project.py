@@ -419,6 +419,24 @@ def main():
     )
     # fmt: on
 
+    # If iostream_eusart is used instead of iostream_usart, create a shim header
+    # so that legacy_ncp_ash (ash-ncp.c) can still find sl_iostream_usart_vcom_config.h
+    config_dir = args.build_dir / "config"
+    eusart_config = config_dir / "sl_iostream_eusart_vcom_config.h"
+    usart_config = config_dir / "sl_iostream_usart_vcom_config.h"
+
+    if eusart_config.is_file() and not usart_config.is_file():
+        LOGGER.info("Creating USART→EUSART shim header for legacy_ncp_ash compatibility")
+        usart_config.write_text(
+            '#ifndef SL_IOSTREAM_USART_VCOM_CONFIG_H\n'
+            '#define SL_IOSTREAM_USART_VCOM_CONFIG_H\n'
+            '#include "sl_iostream_eusart_vcom_config.h"\n'
+            '#ifndef SL_IOSTREAM_USART_VCOM_PERIPHERAL_NO\n'
+            '#define SL_IOSTREAM_USART_VCOM_PERIPHERAL_NO SL_IOSTREAM_EUSART_VCOM_PERIPHERAL_NO\n'
+            '#endif\n'
+            '#endif\n'
+        )
+
     # Make sure all extensions are valid
     for sdk_extension in base_project.get("sdk_extension", []):
         expected_dir = sdk / f"extension/{sdk_extension['id']}_extension"
